@@ -9,6 +9,6 @@ export class TablesService {
     }
 
     findAll() {
-        return "mes tables"
+        return this.tables;
     }
 }
