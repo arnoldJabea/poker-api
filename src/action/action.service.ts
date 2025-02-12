@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class ActionService {
+    call(playerId: number) {
+        throw new Error('Method not implemented.');
+    }
     bet(playerId: number, amount: number) {
         // Verification du solde du joueur
         return `Player ${playerId} has bet ${amount}€`;
