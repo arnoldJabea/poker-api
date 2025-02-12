@@ -13,7 +13,7 @@ export class UserController {
         const user = await this.userService.findOne(body.email);
         if (user != undefined) {
             console.log(user)
-            throw new BadRequestException('Email already in use')
+            throw new BadRequestException('Email déjà utilisé. Veuillez saisir une autre adresse mail.')
         }
         this.userService.create(body)
 
