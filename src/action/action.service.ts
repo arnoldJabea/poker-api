@@ -2,25 +2,28 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class ActionService {
-    call(playerId: number) {
-        throw new Error('Method not implemented.');
-    }
-    bet(playerId: number, amount: number) {
-        // Verification du solde du joueur
-        return `Player ${playerId} has bet ${amount}€`;
-    }
+  bet(playerId: number, amount: number) {
+    
+    return `Player ${playerId} has bet ${amount}€`;
+  }
 
-    fold(playerId: number) {
+  fold(playerId: number) {
+    // Le joueur se couche
+    return `Player ${playerId} has folded`;
+  }
 
-        return `Player ${playerId} has folded`;
-    }
-    raise(playerId: number, amount: number) {
+  call(playerId: number) {
+    // Le joueur suit la mise en cours
+    return `Player ${playerId} has called`;
+  }
 
-        return `Player ${playerId} has raised ${amount}€`;
-    }
-    check(playerId: number) {
+  raise(playerId: number, amount: number) {
+    // Le joueur relance
+    return `Player ${playerId} has raised ${amount}€`;
+  }
 
-        return `Player ${playerId} has checked`;
-    }
-
+  check(playerId: number) {
+    // Le joueur passe son tour sans miser
+    return `Player ${playerId} has checked`;
+  }
 }
