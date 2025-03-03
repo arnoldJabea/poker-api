@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class ActionService {
   bet(playerId: number, amount: number) {
-    
     return `Player ${playerId} has bet ${amount}€`;
   }
 
