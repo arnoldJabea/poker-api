@@ -1,27 +1,18 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { TablesController } from './tables/tables.controller';
-import { TablesService } from './tables/tables.service';
-import { TablesModule } from './tables/tables.module';
-import { UserModule } from './user/user.module';
-import { GameModule } from './game/game.module';
-import { ActionService } from './action/action.service';
-import { ActionModule } from './action/action.module';
-//import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { UserModule } from './user/user.module';
+import { TablesModule } from './tables/tables.module';
+import { GameModule } from './game/game.module';
+import { ActionModule } from './action/action.module';
 import { User } from './user/user.entity';
-import { Table } from 'typeorm';
+import { Table } from './tables/table.entity';
 
 @Module({
   imports: [
-    TablesModule,
-    UserModule,
-    GameModule,
-    ActionModule,
     ConfigModule.forRoot(),
-    /*TypeOrmModule.forRoot({
-      type: 'postgres', // a disparaitre pendant le déploiement( sqlite de singuila)
+    TypeOrmModule.forRoot({
+      type: 'postgres',
       host: process.env.DATABASE_HOST,
       port: Number(process.env.DATABASE_PORT),
       username: process.env.DATABASE_USER,
@@ -30,9 +21,11 @@ import { Table } from 'typeorm';
       autoLoadEntities: true,
       synchronize: true,
       entities: [User, Table],
-    }),*/
+    }),
+    UserModule,
+    TablesModule,
+    GameModule,
+    ActionModule,
   ],
-  controllers: [AppController, TablesController],
-  providers: [AppService, TablesService, ActionService],
 })
-export class AppModule { }
+export class AppModule {}
