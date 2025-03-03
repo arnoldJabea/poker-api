@@ -7,6 +7,7 @@ import { GameModule } from './game/game.module';
 import { ActionModule } from './action/action.module';
 import { User } from './user/user.entity';
 import { Table } from './tables/table.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { Table } from './tables/table.entity';
     TablesModule,
     GameModule,
     ActionModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
