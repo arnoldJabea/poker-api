@@ -28,6 +28,10 @@ export class AuthService {
 
   async register(username: string, password: string) {
     const hashedPassword = await bcrypt.hash(password, 10);
-    return this.userService.createUser(username, hashedPassword);
+    if (this.userService.findByUsername(username) == undefined) {
+      return this.userService.createUser(username, hashedPassword);
+    } else {
+      return 'Le nom existe déjà. Veuillez choisir un autre nom.';
+    }
   }
 }
