@@ -19,6 +19,4 @@ export class UserController {
         return `Propriété numéro #${id}`;
     }
 
-    
-    
 }
