@@ -9,9 +9,9 @@ export class Table {
   @Column()
   name: string;
 
-  @Column({ default: 'waiting' }) 
-  status: string;
+  @Column({ default: 6, name: 'max_players' }) 
+  maxPlayers: number;
 
-  @OneToMany(() => User, (user) => user.id)
+  @OneToMany(() => User, (user) => user.table)
   players: User[];
 }

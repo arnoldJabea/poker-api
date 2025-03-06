@@ -19,4 +19,7 @@ export class UserService {
     const newUser = this.userRepository.create({ username, password: hashedPassword });
     return this.userRepository.save(newUser);
   }
+  async findOne(id: number): Promise<User | null> {
+    return this.userRepository.findOne({ where: { id }, relations: ['table'] });
+  }
 }
