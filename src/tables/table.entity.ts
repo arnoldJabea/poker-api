@@ -14,4 +14,5 @@ export class Table {
 
   @OneToMany(() => User, (user) => user.table)
   players: User[];
+    bets: any;
 }

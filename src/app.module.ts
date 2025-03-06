@@ -5,6 +5,8 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { User } from './user/user.entity';
 import { TableModule } from './tables/tables.module';
+import { Bet } from './game/bet.entity';
+import { Table } from './tables/table.entity';
 
 @Module({
   imports: [
@@ -17,8 +19,9 @@ import { TableModule } from './tables/tables.module';
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
       autoLoadEntities: true,
-      synchronize: true,
-      entities: [User],
+      synchronize: false,
+      entities: [User, Table, Bet], 
+      
     }),
     UserModule,
     AuthModule,
