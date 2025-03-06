@@ -29,4 +29,8 @@ export class TableController {
       throw new BadRequestException('Invalid action');
     }
   }
+  @Post(':id/deal')
+  async dealCards(@Param('id') id: number) {
+    return this.tableService.dealCardsToPlayers(Number(id));
+  }
 }

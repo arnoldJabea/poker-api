@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Table } from '../tables/table.entity';
 
 @Entity()
@@ -17,5 +17,6 @@ export class User {
   balance: number; 
 
   @ManyToOne(() => Table, (table) => table.players, { nullable: true })
+  @JoinColumn({ name: 'tableId' }) 
   table: Table | null;
 }

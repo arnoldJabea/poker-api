@@ -3,9 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Table } from './table.entity';
 import { User } from '../user/user.entity';
+import { DeckService } from '../game/deck/deck.service';
 
 @Injectable()
 export class TableService {
+  
   async findOne(id: number): Promise<Table> {
     const table = await this.tableRepository.findOne({ where: { id }, relations: ['players'] });
   
@@ -22,7 +24,30 @@ export class TableService {
   constructor(
     @InjectRepository(Table) private tableRepository: Repository<Table>,
     @InjectRepository(User) private userRepository: Repository<User>,
-  ) {}
+    private deckService: DeckService
+  ) { }
+  
+  async dealCardsToPlayers(tableId: number) {
+    const table = await this.tableRepository.findOne({ where: { id: tableId }, relations: ['players'] });
+
+    if (!table) {
+      throw new NotFoundException(`Table ${tableId} not found`);
+    }
+    if (table.players.length === 0) {
+      throw new BadRequestException('No players at the table');
+    }
+
+    const deck = this.deckService.generateDeck();
+    const hands = this.deckService.dealCards(deck, table.players.length);
+
+    const playersHands = {};
+    table.players.forEach((player, index) => {
+        playersHands[player.id] = hands[index];  
+    });
+
+
+    return hands;
+  }
 
   async getAllTables(): Promise<Table[]> {
     return this.tableRepository.find({ relations: ['players'] });
