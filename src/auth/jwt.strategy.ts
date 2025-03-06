@@ -6,13 +6,15 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken() as (
+        request: string,
+      ) => string | null,
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET || 'secretKey',
     });
   }
 
-  async validate(payload: any) {
+  validate(payload: { sub: string; username: string }) {
     return { userId: payload.sub, username: payload.username };
   }
 }

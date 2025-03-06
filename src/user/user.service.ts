@@ -13,12 +13,14 @@ export class UserService {
   // 🔍 Trouver un utilisateur par son username
   async findByUsername(username: string): Promise<User | undefined> {
     const user = await this.userRepository.findOne({ where: { username } });
-    return user || undefined; 
+    return user || undefined;
   }
-  
+
   async createUser(username: string, hashedPassword: string): Promise<User> {
-    const newUser = this.userRepository.create({ username, password: hashedPassword });
+    const newUser = this.userRepository.create({
+      username,
+      password: hashedPassword,
+    });
     return this.userRepository.save(newUser);
   }
-  
 }

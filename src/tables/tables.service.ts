@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Table } from './table.entity';
 
 @Injectable()
 export class TablesService {
@@ -8,7 +9,7 @@ export class TablesService {
     this.tables = ['noob', 'intermediate', 'pro'];
   }
 
-  findAll() {
+  findAll(): Table[] {
     return this.tables;
   }
 }
