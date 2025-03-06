@@ -18,8 +18,6 @@ export class AuthController {
   }
   @Post('login')
   async login(@Body() body: { username: string; password: string }) {
-    return this.authService.login(
-      await this.authService.validateUser(body.username, body.password),
-    );
+    return this.authService.login(body.username, body.password);
   }
 }

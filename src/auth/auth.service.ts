@@ -23,8 +23,17 @@ export class AuthService {
     return result;
   }
 
-  async login(user: any) {
-    const payload = { username: user.username, sub: user.id };
+  async login(username: string, password: string) {
+   
+    const user = await this.validateUser(username, password);
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    console.log("🔑 Generating JWT for:", user);
+
+    
+    const payload = { sub: user.id, username: user.username };
     return {
       access_token: this.jwtService.sign(payload),
     };
