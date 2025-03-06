@@ -1,5 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Table } from '../tables/table.entity';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
 export class User {
@@ -14,7 +13,4 @@ export class User {
 
   @Column({ default: 1000 })
   balance: number;
-
-  @ManyToOne(() => Table, (table) => table.players, { nullable: true })
-  table: Table; // Un joueur peut être dans une table
 }

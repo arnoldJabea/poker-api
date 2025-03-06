@@ -2,12 +2,8 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
-import { TablesModule } from './tables/tables.module';
-import { GameModule } from './game/game.module';
-import { ActionModule } from './action/action.module';
-import { User } from './user/user.entity';
-import { Table } from './tables/table.entity';
 import { AuthModule } from './auth/auth.module';
+import { User } from './user/user.entity';
 
 @Module({
   imports: [
@@ -21,13 +17,17 @@ import { AuthModule } from './auth/auth.module';
       database: process.env.DATABASE_NAME,
       autoLoadEntities: true,
       synchronize: true,
-      entities: [User, Table],
+      entities: [User],
     }),
     UserModule,
-    TablesModule,
-    GameModule,
-    ActionModule,
     AuthModule,
   ],
 })
 export class AppModule {}
+
+console.log('Vérification des variables d’environnement :');
+console.log('DATABASE_HOST:', process.env.DATABASE_HOST);
+console.log('DATABASE_PORT:', process.env.DATABASE_PORT);
+console.log('DATABASE_USER:', process.env.DATABASE_USER);
+console.log('DATABASE_PASSWORD:', process.env.DATABASE_PASSWORD ? ' Détecté' : ' Non défini');
+console.log('DATABASE_NAME:', process.env.DATABASE_NAME);

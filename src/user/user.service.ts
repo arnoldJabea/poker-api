@@ -10,7 +10,6 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  // 🔍 Trouver un utilisateur par son username
   async findByUsername(username: string): Promise<User | undefined> {
     const user = await this.userRepository.findOne({ where: { username } });
     return user || undefined;

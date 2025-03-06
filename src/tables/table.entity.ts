@@ -9,9 +9,9 @@ export class Table {
   @Column()
   name: string;
 
-  @Column({ default: 'waiting' }) // waiting, ongoing, finished
+  @Column({ default: 'waiting' }) 
   status: string;
 
-  @OneToMany(() => User, (user) => user.table)
+  @OneToMany(() => User, (user) => user.id)
   players: User[];
 }
