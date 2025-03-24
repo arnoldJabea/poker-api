@@ -1,4 +1,4 @@
 export class ActionDto {
-    playerId: number;
+    playerId!: number;
   }
   

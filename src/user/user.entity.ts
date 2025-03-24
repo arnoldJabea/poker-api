@@ -1,28 +1,43 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
-import { Table } from '../tables/table.entity';
-import { Bet } from '../game/bet.entity';
+import { Table } from './../tables/table.entity'; 
+import { Bet } from './../game/bet/bet.entity';
 
-@Entity()
+
+@Entity('poker_user') 
 export class User {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column({ unique: true })
-  username: string;
+  username!: string;
 
   @Column()
-  password: string;
+  password!: string;
 
   @Column({ default: 1000 })
-  balance: number;
-
-  @ManyToOne(() => Table, table => table.players, { nullable: true })
-  @JoinColumn({ name: 'tableId' })
-  table: Table | null;
+  balance!: number;
 
   
-  @OneToMany(() => Bet, bet => bet.user)
-  bets: Bet[];
+  @ManyToOne(() => Table, (table) => table.players, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'tableId' })
+  table!: Table | null;
 
+ 
+  @OneToMany(() => Bet, (bet) => bet.user)
+  bets!: Bet[];
 
+  
+  @Column({ nullable: true })
+  tableId?: number;
+
+  
+  @Column({ nullable: true })
+  position?: number;
+
+  
+  @Column({ default: 0 })
+  currentBet!: number;
 }

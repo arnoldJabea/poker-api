@@ -5,6 +5,17 @@ import { TableService } from './tables.service';
 export class TableController {
   constructor(private readonly tableService: TableService) {}
 
+  
+  
+  @Post()
+  async createTable(@Body() body: { name: string; maxPlayers?: number }) {
+    if (!body.name) {
+      throw new BadRequestException('Table name is required');
+    }
+    return this.tableService.createTable(body.name, body.maxPlayers);
+  }
+  
+
   @Get()
   async findAll() {
     return this.tableService.findAll();
@@ -16,11 +27,14 @@ export class TableController {
   }
 
   @Post(':id')
-  async joinOrLeaveTable(@Param('id') id: number, @Body() body: { userId: number; action: 'join' | 'leave' }) {
+  async joinOrLeaveTable(
+    @Param('id') id: number,
+    @Body() body: { userId: number; action: 'join' | 'leave' },
+  ) {
     if (!body.userId || !body.action) {
       throw new BadRequestException('Missing userId or action');
     }
-    
+
     if (body.action === 'join') {
       return this.tableService.joinTable(Number(id), body.userId);
     } else if (body.action === 'leave') {
@@ -29,6 +43,7 @@ export class TableController {
       throw new BadRequestException('Invalid action');
     }
   }
+
   @Post(':id/deal')
   async dealCards(@Param('id') id: number) {
     return this.tableService.dealCardsToPlayers(Number(id));

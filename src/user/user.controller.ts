@@ -8,7 +8,8 @@ export class UserController {
 
   @Get('profile') 
   @UseGuards(JwtAuthGuard) 
-  getProfile(@Request() req) {
+  getProfile(@Request() req: any) { 
+
     console.log("yes !!!User data from JWT:", req.user);
     return req.user;
   }

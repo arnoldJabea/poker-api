@@ -7,28 +7,40 @@ import { DeckService } from '../game/deck/deck.service';
 
 @Injectable()
 export class TableService {
-  
-  async findOne(id: number): Promise<Table> {
-    const table = await this.tableRepository.findOne({ where: { id }, relations: ['players'] });
-  
-    if (!table) {
-      throw new NotFoundException(`Table ${id} not found`);
+  async createTable(name: string, maxPlayers = 6): Promise<Table> {
+    try {
+      const newTable = this.tableRepository.create({ name, maxPlayers });
+      return await this.tableRepository.save(newTable);
+    } catch (error) {
+      console.error('❌ Error creating table:', error);
+      throw new BadRequestException('Error creating table');
     }
-  
-    return table;
   }
   
-  async findAll(): Promise<Table[]> {
-    return this.tableRepository.find({ relations: ['players'] });
-  }
+
   constructor(
     @InjectRepository(Table) private tableRepository: Repository<Table>,
     @InjectRepository(User) private userRepository: Repository<User>,
     private deckService: DeckService
-  ) { }
-  
+  ) {}
+
+  async findAll(): Promise<Table[]> {
+    return this.tableRepository.find({ relations: ['players'] });
+  }
+
+  async findOne(id: number): Promise<Table> {
+    const table = await this.tableRepository.findOne({ where: { id }, relations: ['players'] });
+    if (!table) {
+      throw new NotFoundException(`Table ${id} not found`);
+    }
+    return table;
+  }
+
   async dealCardsToPlayers(tableId: number) {
-    const table = await this.tableRepository.findOne({ where: { id: tableId }, relations: ['players'] });
+    const table = await this.tableRepository.findOne({
+      where: { id: tableId },
+      relations: ['players'],
+    });
 
     if (!table) {
       throw new NotFoundException(`Table ${tableId} not found`);
@@ -40,16 +52,16 @@ export class TableService {
     const deck = this.deckService.generateDeck();
     const hands = this.deckService.dealCards(deck, table.players.length);
 
-    const playersHands = {};
+    const playersHands: Record<number, any> = {};
     table.players.forEach((player, index) => {
-        playersHands[player.id] = hands[index];  
+      playersHands[player.id] = hands[index];
     });
 
-
-    return hands;
+    return hands; 
   }
 
   async getAllTables(): Promise<Table[]> {
+    
     return this.tableRepository.find({ relations: ['players'] });
   }
 
@@ -81,7 +93,10 @@ export class TableService {
   }
 
   async leaveTable(userId: number): Promise<string> {
-    const user = await this.userRepository.findOne({ where: { id: userId }, relations: ['table'] });
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['table'],
+    });
 
     if (!user || !user.table) {
       throw new BadRequestException(`User is not at any table`);
@@ -91,5 +106,28 @@ export class TableService {
     await this.userRepository.save(user);
     return `User ${userId} left the table`;
   }
-  
+
+  async startGame(tableId: number) {
+    const table = await this.tableRepository.findOne({
+      where: { id: tableId },
+      relations: ['players'],
+    });
+
+    if (!table || table.players.length < 2) {
+      throw new BadRequestException('Pas assez de joueurs pour commencer.');
+    }
+
+    const smallBlind = table.players[1];
+    const bigBlind = table.players[2];
+
+    smallBlind.balance -= 10;
+    smallBlind.currentBet = 10;
+    bigBlind.balance -= 20;
+    bigBlind.currentBet = 20;
+
+    await this.userRepository.save([smallBlind, bigBlind]);
+
+    table.currentBet = 20;
+    await this.tableRepository.save(table);
+  }
 }

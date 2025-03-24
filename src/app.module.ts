@@ -5,7 +5,8 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { User } from './user/user.entity';
 import { TableModule } from './tables/tables.module';
-import { Bet } from './game/bet.entity';
+import { BetModule } from './game/bet/bet.module';  
+import { Bet } from './game/bet/bet.entity';
 import { Table } from './tables/table.entity';
 
 @Module({
@@ -20,15 +21,15 @@ import { Table } from './tables/table.entity';
       database: process.env.DATABASE_NAME,
       autoLoadEntities: true,
       synchronize: false,
-      entities: [User, Table, Bet], 
-      
+      entities: [User, Table, Bet],
     }),
     UserModule,
     AuthModule,
-    TableModule
+    TableModule,
+    BetModule,  
   ],
 })
-export class AppModule {}
+export class AppModule { }
 
 console.log('Vérification des variables d’environnement :');
 console.log('DATABASE_HOST:', process.env.DATABASE_HOST);
