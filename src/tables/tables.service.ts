@@ -7,6 +7,7 @@ import { DeckService, Card } from '../game/deck/deck.service';
 
 @Injectable()
 export class TableService {
+  aiService: any;
   leaveTable(userId: number) {
     throw new Error('Method not implemented.');
   }
@@ -160,4 +161,38 @@ export class TableService {
 
     return "Égalité, pot partagé.";
   }
+  async addAIPlayerToTable(tableId: number): Promise<User> {
+    const table = await this.tableRepository.findOne({ where: { id: tableId }, relations: ['players'] });
+
+    if (!table) {
+        throw new NotFoundException(`Table ${tableId} introuvable`);
+    }
+
+    if (table.players.length >= table.maxPlayers) {
+        throw new BadRequestException(`La table est déjà pleine`);
+    }
+
+    const aiPlayer = this.userRepository.create({
+        username: `IA_${Math.floor(Math.random() * 1000)}`,
+        balance: 1000,
+        isAI: true,
+    });
+
+    await this.userRepository.save(aiPlayer);
+    
+    aiPlayer.table = table;
+    await this.userRepository.save(aiPlayer);
+
+    return aiPlayer;
+  }
+  async processAITurn(tableId: number) {
+    const table = await this.tableRepository.findOne({ where: { id: tableId }, relations: ['players'] });
+    if (!table) throw new NotFoundException(`Table ${tableId} introuvable`);
+
+    const aiPlayers = table.players.filter(player => player.isAI);
+    for (const aiPlayer of aiPlayers) {
+        await this.aiService.makeDecision(aiPlayer, table);
+    }
+}
+
 }

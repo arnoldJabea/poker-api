@@ -7,6 +7,7 @@ import { Table } from '../../tables/table.entity';
 
 @Injectable()
 export class BetService {
+    tableService: any;
     constructor(
         @InjectRepository(Bet)
         private readonly betRepository: Repository<Bet>,
@@ -71,6 +72,7 @@ export class BetService {
        
         const bet = this.betRepository.create({ user, table, amount });
         await this.betRepository.save(bet);
+        await this.tableService.processAITurn(tableId);
 
         return this.getBetsForTable(tableId);
     }

@@ -10,6 +10,9 @@ export class User {
 
   @Column({ unique: true })
   username!: string;
+  
+  @Column({ default: false })
+  isAI!: boolean;
 
   @Column()
   password!: string;
