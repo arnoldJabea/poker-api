@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/co
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
+import e from 'express';
 
 @Injectable()
 export class AuthService {
@@ -50,3 +51,4 @@ export class AuthService {
     return this.userService.createUser(username, hashedPassword);
   }
 }
+export default AuthService;

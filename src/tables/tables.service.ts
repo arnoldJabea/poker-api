@@ -117,17 +117,29 @@ export class TableService {
       throw new BadRequestException('Pas assez de joueurs pour commencer.');
     }
 
-    const smallBlind = table.players[1];
-    const bigBlind = table.players[2];
+    const smallBlind = table.players[0]; 
+    const bigBlind = table.players.length > 1 ? table.players[1] : null; 
+    if (smallBlind.balance < 10) {
+        throw new BadRequestException(`Le joueur ${smallBlind.username} n’a pas assez de jetons.`);
+    }
+    if (bigBlind && bigBlind.balance < 20) {
+        throw new BadRequestException(`Le joueur ${bigBlind.username} n’a pas assez de jetons.`);
+    }
 
+    // Appliquer les blinds
     smallBlind.balance -= 10;
     smallBlind.currentBet = 10;
-    bigBlind.balance -= 20;
-    bigBlind.currentBet = 20;
 
-    await this.userRepository.save([smallBlind, bigBlind]);
+    if (bigBlind) {
+        bigBlind.balance -= 20;
+        bigBlind.currentBet = 20;
+        table.currentBet = 20; 
+    } else {
+        table.currentBet = 10; 
+    }
 
-    table.currentBet = 20;
+    // Sauvegarder les changements
+    await this.userRepository.save([smallBlind, bigBlind].filter((player): player is User => player !== null)); 
     await this.tableRepository.save(table);
-  }
+}
 }

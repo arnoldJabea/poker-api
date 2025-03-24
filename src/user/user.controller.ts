@@ -6,10 +6,14 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Get()  
+  async getAllUsers() {
+    return this.userService.findAll();
+  }
+
   @Get('profile') 
   @UseGuards(JwtAuthGuard) 
   getProfile(@Request() req: any) { 
-
     console.log("yes !!!User data from JWT:", req.user);
     return req.user;
   }
