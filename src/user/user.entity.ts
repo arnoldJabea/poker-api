@@ -40,4 +40,6 @@ export class User {
   
   @Column({ default: 0 })
   currentBet!: number;
+  @Column({ type: 'text', default: '' })
+  hand!: string;
 }

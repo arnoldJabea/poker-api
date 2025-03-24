@@ -3,10 +3,23 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Table } from './table.entity';
 import { User } from '../user/user.entity';
-import { DeckService } from '../game/deck/deck.service';
+import { DeckService, Card } from '../game/deck/deck.service';
 
 @Injectable()
 export class TableService {
+  leaveTable(userId: number) {
+    throw new Error('Method not implemented.');
+  }
+  joinTable(arg0: number, userId: number) {
+    throw new Error('Method not implemented.');
+  }
+  handEvaluator: any;
+  constructor(
+    @InjectRepository(Table) private tableRepository: Repository<Table>,
+    @InjectRepository(User) private userRepository: Repository<User>,
+    private deckService: DeckService
+  ) {}
+
   async createTable(name: string, maxPlayers = 6): Promise<Table> {
     try {
       const newTable = this.tableRepository.create({ name, maxPlayers });
@@ -16,13 +29,6 @@ export class TableService {
       throw new BadRequestException('Error creating table');
     }
   }
-  
-
-  constructor(
-    @InjectRepository(Table) private tableRepository: Repository<Table>,
-    @InjectRepository(User) private userRepository: Repository<User>,
-    private deckService: DeckService
-  ) {}
 
   async findAll(): Promise<Table[]> {
     return this.tableRepository.find({ relations: ['players'] });
@@ -45,101 +51,113 @@ export class TableService {
     if (!table) {
       throw new NotFoundException(`Table ${tableId} not found`);
     }
-    if (table.players.length === 0) {
-      throw new BadRequestException('No players at the table');
+    if (table.players.length < 2) {
+      throw new BadRequestException('Pas assez de joueurs pour distribuer les cartes.');
     }
 
     const deck = this.deckService.generateDeck();
     const hands = this.deckService.dealCards(deck, table.players.length);
 
-    const playersHands: Record<number, any> = {};
-    table.players.forEach((player, index) => {
-      playersHands[player.id] = hands[index];
-    });
-
-    return hands; 
-  }
-
-  async getAllTables(): Promise<Table[]> {
-    
-    return this.tableRepository.find({ relations: ['players'] });
-  }
-
-  async getTableById(id: number): Promise<Table> {
-    const table = await this.tableRepository.findOne({ where: { id }, relations: ['players'] });
-    if (!table) {
-      throw new NotFoundException(`Table ${id} not found`);
-    }
-    return table;
-  }
-
-  async joinTable(tableId: number, userId: number): Promise<Table> {
-    const table = await this.getTableById(tableId);
-    const user = await this.userRepository.findOne({ where: { id: userId }, relations: ['table'] });
-
-    if (!user) {
-      throw new NotFoundException(`User not found`);
-    }
-    if (user.table) {
-      throw new BadRequestException(`User is already at a table`);
-    }
-    if (table.players.length >= table.maxPlayers) {
-      throw new BadRequestException(`Table is full`);
+    for (let i = 0; i < table.players.length; i++) {
+      table.players[i].hand = JSON.stringify(hands[i]);
+      await this.userRepository.save(table.players[i]);
     }
 
-    user.table = table;
-    await this.userRepository.save(user);
-    return this.getTableById(tableId);
-  }
+    table.communityCards = JSON.stringify([
+      deck.pop(), deck.pop(), deck.pop(), // Flop
+      deck.pop(), // Turn
+      deck.pop()  // River
+    ]);
+    await this.tableRepository.save(table);
 
-  async leaveTable(userId: number): Promise<string> {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-      relations: ['table'],
-    });
-
-    if (!user || !user.table) {
-      throw new BadRequestException(`User is not at any table`);
-    }
-
-    user.table = null;
-    await this.userRepository.save(user);
-    return `User ${userId} left the table`;
+    return {
+      playersHands: hands,
+      communityCards: JSON.parse(table.communityCards),
+    };
   }
 
   async startGame(tableId: number) {
+    const table = await this.tableRepository.findOne({
+        where: { id: tableId },
+        relations: ['players'],
+    });
+
+    if (!table || table.players.length < 2) {
+        throw new BadRequestException('Pas assez de joueurs pour commencer.');
+    }
+
+    const dealerIndex = table.dealerPosition ?? 0;
+    const smallBlindIndex = (dealerIndex + 1) % table.players.length;
+    const bigBlindIndex = (dealerIndex + 2) % table.players.length;
+
+    const smallBlind = table.players[smallBlindIndex];
+    const bigBlind = table.players[bigBlindIndex];
+
+    if (smallBlind.balance < 10 || bigBlind.balance < 20) {
+        throw new BadRequestException('Un joueur n’a pas assez de jetons pour les blindes.');
+    }
+
+    smallBlind.balance -= 10;
+    smallBlind.currentBet = 10;
+    bigBlind.balance -= 20;
+    bigBlind.currentBet = 20;
+
+    await this.userRepository.save([smallBlind, bigBlind]);
+
+    table.currentBet = 20;
+    table.dealerPosition = (dealerIndex + 1) % table.players.length;
+    table.currentTurn = (bigBlindIndex + 1) % table.players.length;
+    
+    await this.tableRepository.save(table);
+  }
+
+  async nextTurn(tableId: number) {
     const table = await this.tableRepository.findOne({
       where: { id: tableId },
       relations: ['players'],
     });
 
-    if (!table || table.players.length < 2) {
-      throw new BadRequestException('Pas assez de joueurs pour commencer.');
+    if (!table) {
+      throw new NotFoundException(`Table ${tableId} not found`);
     }
 
-    const smallBlind = table.players[0]; 
-    const bigBlind = table.players.length > 1 ? table.players[1] : null; 
-    if (smallBlind.balance < 10) {
-        throw new BadRequestException(`Le joueur ${smallBlind.username} n’a pas assez de jetons.`);
-    }
-    if (bigBlind && bigBlind.balance < 20) {
-        throw new BadRequestException(`Le joueur ${bigBlind.username} n’a pas assez de jetons.`);
-    }
-
-    // Appliquer les blinds
-    smallBlind.balance -= 10;
-    smallBlind.currentBet = 10;
-
-    if (bigBlind) {
-        bigBlind.balance -= 20;
-        bigBlind.currentBet = 20;
-        table.currentBet = 20; 
-    } else {
-        table.currentBet = 10; 
-    }
-
-    // Sauvegarder les changements
-    await this.userRepository.save([smallBlind, bigBlind].filter((player): player is User => player !== null)); 
+    table.currentTurn = (table.currentTurn + 1) % table.players.length;
     await this.tableRepository.save(table);
-}
+
+    return { currentTurn: table.currentTurn };
+  }
+
+  async determineWinner(tableId: number) {
+    const table = await this.tableRepository.findOne({
+      where: { id: tableId },
+      relations: ['players'],
+    });
+
+    if (!table) {
+      throw new NotFoundException(`Table ${tableId} not found`);
+    }
+
+    const communityCards: Card[] = JSON.parse(table.communityCards);
+    let bestScore = -1;
+    let winner: User | null = null;
+
+    for (const player of table.players) {
+      const playerCards: Card[] = JSON.parse(player.hand);
+      const score = this.handEvaluator.evaluateHand(playerCards, communityCards);
+      if (score > bestScore) {
+        bestScore = score;
+        winner = player;
+      }
+    }
+
+    if (winner) {
+      winner.balance += table.pot;
+      table.pot = 0;
+      await this.userRepository.save(winner);
+      await this.tableRepository.save(table);
+      return `Le gagnant est ${winner.username} avec une main de rang ${bestScore}`;
+    }
+
+    return "Égalité, pot partagé.";
+  }
 }
