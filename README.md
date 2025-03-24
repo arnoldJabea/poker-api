@@ -1,99 +1,231 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# ♠️ Texas Hold'em Poker API 🃏
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🎯 Description
+Cette API permet de simuler des parties de **Texas Hold’em Poker** avec :
+- 🎮 **Gestion des tables et des joueurs** (inscription, connexion, placement aux tables)
+- 💰 **Système de mises et de blindes** (small blind, big blind, relance, all-in)
+- 🃏 **Gestion du deck et distribution des cartes** (flop, turn, river)
+- 🧠 **Intelligence Artificielle** (joueurs IA automatisés)
+- 🔐 **Authentification sécurisée** (JWT)
+- 📊 **Enregistrement des statistiques des parties**
+- 📑 **Documentation API avec Swagger**
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🚀 Technologies utilisées
+| Technologie  | Usage |
+|-------------|----------------|
+| **NestJS**  | Framework backend |
+| **TypeORM** | ORM pour PostgreSQL |
+| **PostgreSQL** | Base de données |
+| **JWT** | Authentification sécurisée |
+| **Swagger** | Documentation API |
+| **Docker** (optionnel) | Conteneurisation de l’API |
+| **Jest** | Tests unitaires |
 
-## Project setup
+---
 
+## 📌 Installation et configuration
+
+### 🛠 **1. Prérequis**
+Assure-toi d’avoir installé :
+- **Node.js** (>= 16.x)
+- **PostgreSQL** (>= 14.x)
+- **npm** ou **yarn**
+- **Docker** (optionnel)
+
+---
+
+### ⚙ **2. Cloner le projet**
 ```bash
-$ npm install
-```
+git clone https://github.com/tonpseudo/texas-holdem-api.git
+cd texas-holdem-api
 
-## Compile and run the project
 
-```bash
-# development
-$ npm run start
 
-# watch mode
-$ npm run start:dev
+⸻
 
-# production mode
-$ npm run start:prod
-```
+📦 3. Installer les dépendances
 
-## Run tests
+npm install
 
-```bash
-# unit tests
-$ npm run test
 
-# e2e tests
-$ npm run test:e2e
 
-# test coverage
-$ npm run test:cov
-```
+⸻
 
-## Deployment
+🛠 4. Configurer l’environnement
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Crée un fichier .env à la racine :
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_USER=postgres
+DATABASE_PASSWORD=motdepasse
+DATABASE_NAME=poker
+JWT_SECRET=ton_secret
+PORT=3000
 
-```bash
-$ npm install -g mau
-$ mau deploy
-```
+Si tu utilises Docker, adapte les valeurs.
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+⸻
 
-## Resources
+🏗 5. Démarrer PostgreSQL
 
-Check out a few resources that may come in handy when working with NestJS:
+Si PostgreSQL est installé en local :
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+psql -U postgres -c "CREATE DATABASE poker;"
 
-## Support
+Ou avec Docker :
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+docker-compose up -d
 
-## Stay in touch
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
 
-## License
+⸻
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+🔄 6. Exécuter les migrations
+
+npm run typeorm -- migration:run -d ./ormconfig/ormdatasource.ts
+
+Si nécessaire, recréer la BDD :
+
+npm run typeorm -- schema:drop
+npm run typeorm -- migration:run -d ./ormconfig/ormdatasource.ts
+
+
+
+⸻
+
+🚀 7. Lancer l’API
+
+npm run start
+
+Mode développement :
+
+npm run start:dev
+
+
+
+⸻
+
+📖 Documentation API
+
+Swagger est disponible à cette URL :
+
+http://localhost:3000/api
+
+
+
+⸻
+
+📌 Routes principales
+
+🎮 Gestion des tables
+
+Méthode	Endpoint	Description
+POST	/tables	Créer une table
+GET	/tables	Voir toutes les tables
+GET	/tables/:id	Voir une table spécifique
+POST	/tables/:id	Rejoindre / quitter une table
+POST	/tables/:id/deal	Distribuer les cartes
+POST	/tables/:id/start	Démarrer une partie
+
+
+
+⸻
+
+💰 Gestion des mises
+
+Méthode	Endpoint	Description
+POST	/bets/:tableId/:userId	Effectuer une mise
+GET	/bets/:tableId	Voir les mises en cours
+
+
+
+⸻
+
+🔐 Authentification
+
+Méthode	Endpoint	Description
+POST	/auth/register	Inscription d’un joueur
+POST	/auth/login	Connexion (JWT)
+GET	/users/profile	Voir son profil
+
+
+
+⸻
+
+🧠 Gestion de l’IA
+
+Méthode	Endpoint	Description
+POST	/tables/:id/add-ai	Ajouter un joueur IA
+POST	/tables/:id/ai-turn	Faire jouer l’IA
+
+
+
+⸻
+
+🛠 Tests
+
+Lancer les tests unitaires :
+
+npm run test
+
+Lancer les tests e2e :
+
+npm run test:e2e
+
+
+
+⸻
+
+📊 Statistiques des parties
+
+Chaque partie enregistre :
+	•	👑 Le vainqueur (ID du joueur gagnant)
+	•	⏳ Durée de la partie
+	•	💰 Total des mises
+
+⸻
+
+🚀 Déploiement
+
+📦 Avec Docker
+
+Créer une image Docker :
+
+docker build -t texas-holdem-api .
+
+Lancer le conteneur :
+
+docker run -p 3000:3000 texas-holdem-api
+
+
+
+⸻
+
+🤝 Contribuer
+
+Les contributions sont bienvenues ! 🛠
+	1.	Fork le repo
+	2.	Crée une branche (feat/ajout-fonctionnalité)
+	3.	Commit tes changements
+	4.	Fais une Pull Request
+
+⸻
+
+📜 Licence
+
+Ce projet est sous licence MIT.
+
+⸻
+
+🏆 Auteurs
+	•	@Arnold jabea
+
+
+	•	
+
+
+
